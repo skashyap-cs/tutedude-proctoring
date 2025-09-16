@@ -1,6 +1,8 @@
 {
   "build": {
-    "root": "backend"
+    "root": "backend",
+    "install": "npm install",
+    "command": "npm start"
   }
 }
 
