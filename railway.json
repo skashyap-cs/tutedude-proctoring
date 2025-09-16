@@ -1,8 +1,8 @@
 {
   "build": {
     "root": "backend",
-    "install": "npm install",
-    "command": "npm start"
+    "install": "cd backend && npm install",
+    "command": "cd backend && npm start"
   }
 }
 
