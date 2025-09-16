@@ -25,10 +25,10 @@ async function postEvent(event) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(event)
   });
-  try { 
-    return await res.json(); 
-  } catch(e) { 
-    return { ok: res.ok }; 
+  try {
+    return await res.json();
+  } catch (e) {
+    return { ok: res.ok };
   }
 }
 
@@ -37,4 +37,15 @@ function downloadReport(interviewId, format = 'pdf') {
   return fetch(url);
 }
 
-export default { uploadVideo, uploadFrame, postEvent, downloadReport };
+/**
+ * Named const export to satisfy ESLint rule:
+ * import/no-anonymous-default-export (assign object to variable before exporting)
+ */
+const api = {
+  uploadVideo,
+  uploadFrame,
+  postEvent,
+  downloadReport
+};
+
+export default api;
