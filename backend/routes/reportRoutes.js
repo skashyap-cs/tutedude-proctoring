@@ -4,14 +4,16 @@ const router = express.Router();
 const PDFDocument = require('pdfkit');
 const mongoose = require('mongoose');
 
+// Ensure model is registered
+const EventLog = mongoose.models.EventLog || require('../models/EventLog');
+
 /**
  * Helper: convert event list to CSV string
  */
 function eventsToCsv(events) {
   const header = ['timestamp','eventType','candidateName','details'];
   const rows = events.map(ev => {
-    const details = typeof ev.details === 'object' ? JSON.stringify(ev.details) : (ev.details || '');
-    // escape double quotes
+    const details = (ev.details && typeof ev.details === 'object') ? JSON.stringify(ev.details) : (ev.details || '');
     const safeDetails = String(details).replace(/"/g, '""');
     return [
       `"${(new Date(ev.timestamp)).toISOString()}"`,
@@ -24,17 +26,29 @@ function eventsToCsv(events) {
 }
 
 /**
- * Controller: download report as PDF or CSV
+ * GET /reports/events/:interviewId
+ * Return raw events JSON for the interview (sorted by timestamp).
+ */
+router.get('/events/:interviewId', async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+    const logs = await EventLog.find({ interviewId }).sort({ timestamp: 1 }).lean();
+    return res.json({ success: true, logs });
+  } catch (err) {
+    console.error('reports/events error', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/**
+ * GET /reports/download/:interviewId?format=pdf|csv
+ * Download report as PDF (default) or CSV.
  */
 router.get('/download/:interviewId', async (req, res) => {
   try {
     const interviewId = req.params.interviewId;
     const format = (req.query.format || 'pdf').toLowerCase();
 
-    // get EventLog model (assumes it was registered earlier in server startup)
-    const EventLog = mongoose.models.EventLog || mongoose.model('EventLog');
-
-    // fetch logs
     const events = await EventLog.find({ interviewId }).sort({ timestamp: 1 }).lean();
 
     if (!events || events.length === 0) {
@@ -59,7 +73,7 @@ router.get('/download/:interviewId', async (req, res) => {
       res.send(result);
     });
 
-    // Build PDF
+    // Build PDF content
     doc.addPage({ size: 'A4', margin: 40 });
     doc.fontSize(18).fillColor('#000').text('Interview Report', { align: 'center' });
     doc.moveDown(0.5);
@@ -69,15 +83,16 @@ router.get('/download/:interviewId', async (req, res) => {
     doc.moveDown(1);
 
     events.forEach((ev, idx) => {
-      doc.fontSize(11).fillColor('#000').text(`${idx + 1}. ${ev.eventType} — ${new Date(ev.timestamp).toLocaleString()}`);
+      const timeText = ev.timestamp ? new Date(ev.timestamp).toLocaleString() : '';
+      doc.fontSize(11).fillColor('#000').text(`${idx + 1}. ${ev.eventType || 'event'} — ${timeText}`);
       doc.fontSize(10).fillColor('#333').text(`Candidate: ${ev.candidateName || ''}`);
-      const detailsText = typeof ev.details === 'object'
+      const detailsText = (ev.details && typeof ev.details === 'object')
         ? JSON.stringify(ev.details, null, 2)
         : String(ev.details || '');
       doc.fontSize(10).fillColor('#333').text(`Details: ${detailsText}`);
       doc.moveDown(0.5);
 
-      // add new page occasionally to avoid overflow
+      // page break if long
       if ((idx + 1) % 28 === 0) doc.addPage();
     });
 
