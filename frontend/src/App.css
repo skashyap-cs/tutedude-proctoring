@@ -1,0 +1,151 @@
+/* App.css - global styles for proctoring UI */
+:root{
+  --bg1: #0f1724; /* dark navy */
+  --bg2: #0b2545; /* bluish */
+  --card: rgba(255,255,255,0.03);
+  --accent: #7dd3fc; /* light cyan */
+  --accent-2: #60a5fa; /* blue */
+  --muted: #9aa4b2;
+  --glass: rgba(255,255,255,0.04);
+  --danger: #ff6b6b;
+  --success: #7ee787;
+  --card-radius: 14px;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+html,body,#root {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 100%);
+  color: #e6eef8;
+}
+
+/* center layout */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+/* card */
+.proctor-card {
+  width: 100%;
+  max-width: 1100px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 720px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+/* left column (video) */
+.panel-video {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  padding: 14px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* video element */
+.video-el {
+  width: 100%;
+  max-width: 680px;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 -6px 30px rgba(0,0,0,0.2);
+  background: #000;
+  overflow: hidden;
+}
+
+/* right column (controls & report) */
+.panel-meta {
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  min-height: 360px;
+}
+
+/* header row */
+.header-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.brand {
+  font-weight:700;
+  letter-spacing:0.2px;
+  font-size:18px;
+}
+.small-muted { color: var(--muted); font-size:13px; }
+
+/* form inputs */
+.input-row { margin: 8px 0; display:flex; gap:8px; align-items:center; }
+.input-row input[type="text"]{
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.25);
+  color: #eaf6ff;
+  outline:none;
+  min-width: 200px;
+}
+.kv { font-size:13px; color:var(--muted); }
+
+/* status badge */
+.status-badge {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background: linear-gradient(90deg,var(--accent-2),var(--accent));
+  color:#022338;
+  font-weight:600;
+  font-size:13px;
+  box-shadow: 0 6px 18px rgba(61,160,255,0.08);
+}
+
+/* buttons */
+.btn {
+  display:inline-block;
+  padding:9px 14px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+  color:#022338;
+  background: linear-gradient(90deg,var(--accent),var(--accent-2));
+  box-shadow: 0 8px 20px rgba(35,100,190,0.12);
+}
+.btn.secondary {
+  color:#e9f6ff;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:none;
+}
+.btn.danger {
+  background: linear-gradient(90deg, #ff8a8a, #ff6b6b);
+  color: white;
+}
+
+/* info area */
+.info {
+  font-size:13px;
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* small responsive */
+@media (max-width: 980px){
+  .proctor-card { grid-template-columns: 1fr; padding: 16px; }
+  .video-el { max-width: 100%; }
+}
